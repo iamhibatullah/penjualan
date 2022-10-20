@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{layout :: head}"></head>
+<body class="main-body" th:data-role="${#authentication.getAuthorities()}">
+	<nav th:replace="~{layout :: navigation}"></nav>
+	<header th:replace="~{layout :: header (${breadCrumbs})}"></header>
+	<main>
+		<div class="grid-tiles product-index">
+			<form method="get" class="filter" th:attr="action=@{/product/index}">
+				<input type="text" name="name" placeholder="Product Name..." th:attr="value=${name}">
+				<button class="blue-button" type="submit">Search</button>
+			</form>
+			<div>
+				<a class="blue-button create-button" th:href="@{/product/checkout}">Checkout</a>
+				<i class="fa fa-cart-arrow-down"></i>
+				<span th:text="${#lists.size(cart.detail)}"></span>
+			</div>
+			<div class="tiles-container">
+				<div class="tile" th:each="product : ${grid}" th:object="${product}">
+					<div class="button-buy">
+						<a th:href="@{/product/buy(code=*{productCode})}" class="blue-button">Buy</a>
+					</div>
+					<div class="name" th:text="*{productName}"></div>
+					<div class="image-container">
+						<img th:src="@{/resources/image/no-image.jpg}">
+					</div>
+					<div class="price" th:if="*{discount == 0}">
+						<div th:text="'Rp.' + *{price}"></div>
+					</div>
+					<div class="price" th:if="*{discount != 0}">
+						<del th:text="'Rp.' + *{price}"></del>
+						<div th:text="'Rp.' + *{discountPrice}"></div>
+					</div>
+				</div>
+
+			</div>
+			<div class="pagination">
+				<div th:text="|page ${currentPage} of ${totalPages}|"></div>
+				<div th:if="${totalPages != 0}">
+					<a th:each="loop:${#numbers.sequence(1,totalPages)}"
+					   th:href="@{/product/index(page=${loop},name=${name})}"
+					   th:text="${loop}"></a>
+				</div>
+			</div>
+		</div>
+	</main>
+	<footer th:replace="~{layout :: footer}"></footer>
+	<th:block th:replace="~{layout :: javascript}"></th:block>
+</body>
+</html>
